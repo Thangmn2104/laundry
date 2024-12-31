@@ -1,11 +1,7 @@
-import { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faUserTie, faBars, faLayerGroup, faClipboardList,
-    faGraduationCap,
-    faClipboardQuestion,
-    faBook,
-    faBell
+    faBars, faLayerGroup, faClipboardList,
+
 } from '@fortawesome/free-solid-svg-icons';
 import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate

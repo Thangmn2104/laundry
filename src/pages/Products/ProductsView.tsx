@@ -28,7 +28,7 @@ interface Product {
 
 const ProductsView = () => {
     const [search, setSearch] = useState("")
-    const [isLoading, setIsLoading] = useState(false)
+    const [isLoading] = useState(false)
     const [selectedProducts, setSelectedProducts] = useState<string[]>([])
     const [total, setTotal] = useState(0)
     const [selectedSort, setSelectedSort] = useState<{ key: string, name: string }>({

@@ -1,5 +1,4 @@
 import './App.css'
-import { Button } from '@/components/ui'
 import RouterWrapper from './components/common/RouterWrapper'
 
 function App() {

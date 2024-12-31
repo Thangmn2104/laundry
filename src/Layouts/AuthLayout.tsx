@@ -1,5 +1,4 @@
 import { ReactNode } from "react";
-import LoginBg from '@/assets/images/login_bg.jpg';
 
 const AuthLayout = ({
     children
