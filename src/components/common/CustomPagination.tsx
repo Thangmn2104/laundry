@@ -41,8 +41,8 @@ function CustomPagination({ total = 0, currentPage = 1, className = '', pageSize
             pageNumbers.push(1)
 
             // Tính toán vị trí bắt đầu và kết thúc của dải số trang
-            let start = Math.max(currentPage - 1, 2)
-            let end = Math.min(currentPage + 1, totalPages - 1)
+            const start = Math.max(currentPage - 1, 2)
+            const end = Math.min(currentPage + 1, totalPages - 1)
 
             // Thêm dấu ... đầu tiên nếu cần
             if (start > 2) {

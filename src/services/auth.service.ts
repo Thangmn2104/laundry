@@ -11,7 +11,7 @@ class AuthService extends BaseService {
 
     async login(reqObj: any) {
         const url = `/${this.name}/login`
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             ApiClient.post(url, reqObj).then((res) => {
                 resolve(res)
             }).catch((err) => {
@@ -24,7 +24,7 @@ class AuthService extends BaseService {
 
     async forgotPassword(reqObj: any) {
         const url = `/${this.name}/forgot-password`
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             ApiClient.post(url, reqObj).then((res) => {
                 resolve(res)
             }).catch((err) => {
@@ -37,7 +37,7 @@ class AuthService extends BaseService {
         const { token } = reqObj
         delete reqObj.token
         const url = `/${this.name}/reset-password?t=${token}`
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             ApiClient.post(url, reqObj.password, {
                 headers: {
                     "Content-Type": 'text/plain'
@@ -52,14 +52,14 @@ class AuthService extends BaseService {
     }
 
     async logOut() {
-        return new Promise(async (resolve) => {
+        return new Promise((resolve) => {
             resolve('Đăng xuất thành công')
         })
     }
 
     async me() {
         const url = `/${this.name}/me`
-        return new Promise(async (resolve, reject) => {
+        return new Promise((resolve, reject) => {
             ApiClient.get(url).then((res) => {
                 resolve(res)
             }).catch((err) => {

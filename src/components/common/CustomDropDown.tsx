@@ -34,7 +34,8 @@ const CustomDropDown = ({
 }: CustomDropDownProps) => {
 
     const [item, setItem] = useState<any | null>(null);
-    const [_, setIsOpen] = useState(false);
+    const [isOpen, setIsOpen] = useState(false);
+    console.log(isOpen)
     const [searchValue, setSearchValue] = useState<string>('');
     const [dropdownFilterList, setDropdownFilterList] = useState<any[]>(dropDownList || []);
     const handleChangeItem = (data: any) => {

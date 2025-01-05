@@ -1,26 +1,17 @@
+import { useAuth } from "@/store/useAuthStore";
+import { Navigate } from "react-router-dom";
+
 type props = {
     children: React.ReactNode;
-    role: string;
     allowedRoles: string[];
 }
 
 const AuthRoute = ({ children }: props) => {
-    // let token = '';
+    const { token } = useAuth();
 
-    // useEffect(() => {
-    //     handleCheckToken
-    // }, [])
-
-    // const handleCheckToken = () => {
-    //     token = getCookie('_at')
-    //     if (token) {
-    //         return <Navigate to="/" replace />
-    //     }
-    // }
-
-    // if (!allowedRoles.includes(role)) {
-    //     return <Navigate to="/404" replace />;
-    // }
+    if (token) {
+        return <Navigate to="/" replace />
+    }
 
     return children;
 };

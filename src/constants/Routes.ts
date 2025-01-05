@@ -1,5 +1,6 @@
 import HomeView from "@/pages/Home/HomeView";
 import LoginView from "@/pages/Login/LoginView";
+import OrdersView from "@/pages/Orders/OrdersView";
 import ProductsView from "@/pages/Products/ProductsView";
 import { FC } from "react";
 
@@ -15,6 +16,12 @@ export const routes: MappedAuthRouteType[] = [
         element: ProductsView,
         allowedRoles: ["admin"],
         isUsedLayout: true
+    },
+    {
+        path: "/orders",
+        element: OrdersView,
+        allowedRoles: ["admin"],
+        isUsedLayout: true
     }
 ];
 
@@ -26,7 +33,6 @@ export const MappedAuthRoute: MappedAuthRouteType[] = [
         allowedRoles: ["guest"],
         isUsedLayout: true
     },
-
 ]
 
 export interface MappedAuthRouteType {

@@ -7,10 +7,6 @@ import ProtectedRoute from "@/middleware/ProtectedRoute";
 import NotFound from "@/pages/NotFound/NotFound";
 
 const RouterWrapper = () => {
-    const authUser = {
-        role: 'admin'
-    }
-
     return (
         <Routes>
             {MappedAuthRoute.map((route: MappedAuthRouteType, index: number) => (
@@ -18,7 +14,7 @@ const RouterWrapper = () => {
                     key={index}
                     path={route.path}
                     element={
-                        <AuthRoute role={authUser?.role} allowedRoles={route.allowedRoles}>
+                        <AuthRoute allowedRoles={route.allowedRoles}>
                             <AuthLayout>
                                 {<route.element />}
                             </AuthLayout>
@@ -31,7 +27,7 @@ const RouterWrapper = () => {
                     key={index}
                     path={route.path}
                     element={
-                        <ProtectedRoute role={authUser?.role} allowedRoles={route.allowedRoles}>
+                        <ProtectedRoute allowedRoles={route.allowedRoles}>
                             {route.isUsedLayout ? (
                                 <DefaultLayout>
                                     {<route.element />}

@@ -18,6 +18,7 @@ import {
 import { Inbox, Loader2 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
 
 interface DataTableProps<TData, TValue> {
   columns: ColumnDef<TData, TValue>[];
@@ -26,6 +27,7 @@ interface DataTableProps<TData, TValue> {
   isBorderInner?: boolean;
   className?: string
   defaultViewPath?: string;
+  tableRef?: (table: any) => void;
 }
 
 function CustomTable<TData, TValue>({
@@ -34,13 +36,20 @@ function CustomTable<TData, TValue>({
   loading,
   isBorderInner,
   className,
-  defaultViewPath
+  defaultViewPath,
+  tableRef
 }: DataTableProps<TData, TValue>) {
   const table = useReactTable({
     data,
     columns,
     getCoreRowModel: getCoreRowModel(),
   });
+
+  useEffect(() => {
+    if (tableRef) {
+      tableRef(table);
+    }
+  }, [table, tableRef]);
 
   const navigate = useNavigate()
   return (
@@ -60,7 +69,18 @@ function CustomTable<TData, TValue>({
                 <TableRow key={headerGroup.id}>
                   {headerGroup.headers.map((header) => {
                     return (
-                      <TableHead key={header.id} className={cn(isBorderInner && 'border')}>
+                      <TableHead
+                        key={header.id}
+                        className={cn(
+                          isBorderInner && 'border',
+                          header.column.columnDef.size && `w-[${header.column.columnDef.size}px]`
+                        )}
+                        style={{
+                          width: header.column.columnDef.size ? `${header.column.columnDef.size}px` : undefined,
+                          minWidth: header.column.columnDef.minSize ? `${header.column.columnDef.minSize}px` : undefined,
+                          maxWidth: header.column.columnDef.maxSize ? `${header.column.columnDef.maxSize}px` : undefined,
+                        }}
+                      >
                         {header.isPlaceholder
                           ? null
                           : flexRender(
@@ -83,7 +103,15 @@ function CustomTable<TData, TValue>({
                     data-state={row.getIsSelected() && "selected"}
                   >
                     {row.getVisibleCells().map((cell) => (
-                      <TableCell key={cell.id} className={cn(isBorderInner && 'border')}>
+                      <TableCell
+                        key={cell.id}
+                        className={cn(isBorderInner && 'border')}
+                        style={{
+                          width: cell.column.columnDef.size ? `${cell.column.columnDef.size}px` : undefined,
+                          minWidth: cell.column.columnDef.minSize ? `${cell.column.columnDef.minSize}px` : undefined,
+                          maxWidth: cell.column.columnDef.maxSize ? `${cell.column.columnDef.maxSize}px` : undefined,
+                        }}
+                      >
                         {flexRender(
                           cell.column.columnDef.cell,
                           cell.getContext(),

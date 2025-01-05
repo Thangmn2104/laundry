@@ -1,9 +1,9 @@
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import {
-    faBars, faLayerGroup, faClipboardList,
+    faLayerGroup, faClipboardList,
+    faBoxes,
 
 } from '@fortawesome/free-solid-svg-icons';
-import { Button } from '../ui/button';
 import { useNavigate } from 'react-router-dom'; // Import useNavigate
 import { cn } from '@/lib/utils';
 
@@ -24,24 +24,22 @@ function SideBar() {
         {
             id: 2, // Changed from 5 to 4 for sequential ID
             label: "Hàng hóa",
-            icon: faClipboardList,
+            icon: faBoxes,
             path: "/products", // Add path for navigation
             allowRoles: ['admin']
         },
+        {
+            id: 3,
+            label: "Đơn hàng",
+            icon: faClipboardList,
+            path: "/orders",
+            allowRoles: ['admin']
+        }
     ];
 
     return (
-        <div className="flex h-screen fixed top-0 left-0 border-r border-slate-500/10 z-[999] select-none">
-            <div className="md:hidden p-4">
-                <Button
-                    className="text-gray-800 focus:outline-none"
-                >
-                    <FontAwesomeIcon icon={faBars} size="2x" />
-                </Button>
-            </div>
-
-            {/* Sidebar */}
-            <div className={`transition-transform duration-300 md:translate-x-0 w-64 h-full bg-white shadow-md`}>
+        <div className="flex h-screen fixed top-0 left-0 border-r border-slate-500/10 z-50 select-none">
+            <div className={`transition-transform duration-300 md:translate-x-0 w-64 h-full bg-white shadow-md md:block hidden`}>
                 <div className="p-6">
                     <h1 className="flex justify-center items-center text-2xl font-bold text-gray-800">
                         <span className="text-primary font-bold text-center">Laundry</span>
