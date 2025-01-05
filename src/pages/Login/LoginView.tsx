@@ -42,10 +42,8 @@ const LoginView = () => {
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         if (validateForm()) {
-            console.log('Form data:', formData);
             const res: any = await authService.login(formData)
             if (res.status === 200) {
-                console.log(res)
                 const { token, user } = res.data
                 setAuth(token, user)
                 navigate('/')

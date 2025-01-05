@@ -75,10 +75,10 @@ const DialogImportProduct = ({
             file.type === 'application/vnd.ms-excel'
     }
 
-    const handleDownloadTemplate = () => {
-        // TODO: Implement template download
-        console.log('Downloading template...')
-    }
+    // const handleDownloadTemplate = () => {
+    //     // TODO: Implement template download
+    //     console.log('Downloading template...')
+    // }
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
@@ -174,7 +174,7 @@ const DialogImportProduct = ({
                             </div>
                         )}
 
-                        <div className="flex flex-col gap-2">
+                        {/* <div className="flex flex-col gap-2">
                             <p className="text-sm text-muted-foreground">
                                 Chưa có file mẫu?
                                 <Button
@@ -186,7 +186,7 @@ const DialogImportProduct = ({
                                     Tải xuống file mẫu
                                 </Button>
                             </p>
-                        </div>
+                        </div> */}
 
                         <div className='flex justify-end gap-3 mt-2'>
                             <Button
