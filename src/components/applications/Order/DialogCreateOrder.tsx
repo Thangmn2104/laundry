@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { ProductService } from "@/services/product.service"
-import { Plus, Minus, Search } from "lucide-react"
+import { Search } from "lucide-react"
 
 interface DialogCreateOrderProps {
     open: boolean
@@ -119,49 +119,46 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
         }
     }
 
-    const handleIncreaseQuantity = (productId: string) => {
+    const handleIncreaseQuantity = (productId: string, step: number = 1) => {
         setProducts(products.map(product =>
             product.productId === productId
-                ? { ...product, quantity: product.quantity + 1 }
+                ? { ...product, quantity: +(product.quantity + step).toFixed(1) }
                 : product
         ))
 
-        // Update formData.products
         setFormData(prev => ({
             ...prev,
-            orderItems: products.map(product =>
-                product.productId === productId
-                    ? { ...product, quantity: product.quantity + 1 }
-                    : product
-            ).filter(product => product.quantity > 0)
+            orderItems: prev.orderItems.map(item =>
+                item.productId === productId
+                    ? { ...item, quantity: +(item.quantity + step).toFixed(1) }
+                    : item
+            )
         }))
     }
 
-    const handleDecreaseQuantity = (productId: string) => {
+    const handleDecreaseQuantity = (productId: string, step: number = 1) => {
         const updatedProducts = products.map(product => {
-            if (product.productId === productId && product.quantity > 0) {
-                const newQuantity = product.quantity - 1
+            if (product.productId === productId && product.quantity >= step) {
+                const newQuantity = +(product.quantity - step).toFixed(1)
                 return {
                     ...product,
                     quantity: newQuantity,
-                    selected: newQuantity > 0 // Unselect if quantity becomes 0
+                    selected: newQuantity > 0
                 }
             }
             return product
         })
         setProducts(updatedProducts)
 
-        // Update formData.products and remove product if quantity is 0
         setFormData(prev => ({
             ...prev,
-            orderItems: updatedProducts
-                .filter(p => p.quantity > 0) // Only keep products with quantity > 0
-                .map(p => ({
-                    productId: p.productId,
-                    productName: p.productName,
-                    price: p.price,
-                    quantity: p.quantity
-                }))
+            orderItems: prev.orderItems.map(item => {
+                if (item.productId === productId) {
+                    const newQuantity = +(item.quantity - step).toFixed(1)
+                    return { ...item, quantity: newQuantity }
+                }
+                return item
+            }).filter(item => item.quantity > 0)
         }))
     }
 
@@ -324,22 +321,40 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                                                 }).format(product.price)}
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-2">
+                                        <div className="flex items-center gap-1">
+
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                onClick={() => handleDecreaseQuantity(product.productId)}
+                                                onClick={() => handleDecreaseQuantity(product.productId, 1)}
                                                 disabled={product.quantity === 0}
                                             >
-                                                <Minus className="h-4 w-4" />
+                                                - 1
                                             </Button>
-                                            <span className="w-8 text-center">{product.quantity}</span>
+                                            <div className="flex items-center gap-1">
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => handleDecreaseQuantity(product.productId, 0.1)}
+                                                    disabled={product.quantity < 0.1}
+                                                >
+                                                    <span className="text-xs">- 0.1</span>
+                                                </Button>
+                                                <span className="w-12 text-center">{product.quantity.toFixed(1)}</span>
+                                                <Button
+                                                    variant="outline"
+                                                    size="icon"
+                                                    onClick={() => handleIncreaseQuantity(product.productId, 0.1)}
+                                                >
+                                                    <span className="text-xs">+ 0.1</span>
+                                                </Button>
+                                            </div>
                                             <Button
                                                 variant="outline"
                                                 size="icon"
-                                                onClick={() => handleIncreaseQuantity(product.productId)}
+                                                onClick={() => handleIncreaseQuantity(product.productId, 1)}
                                             >
-                                                <Plus className="h-4 w-4" />
+                                                + 1
                                             </Button>
                                         </div>
                                     </div>
