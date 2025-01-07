@@ -71,7 +71,7 @@ const OrdersView = () => {
     const orderService = new OrderService()
     const [query, setQuery] = useState({
         page: 1,
-        limit: 10,
+        limit: 5,
         query: {
             sort: '{"createdAt":-1}',
         }
@@ -245,10 +245,10 @@ const OrdersView = () => {
         //         </div>
         //     ),
         // },
-        {
-            accessorKey: "orderId",
-            header: "Mã đơn"
-        },
+        // {
+        //     accessorKey: "orderId",
+        //     header: "Mã đơn"
+        // },
         {
             accessorKey: "customerName",
             header: "Khách hàng",

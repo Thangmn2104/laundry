@@ -37,7 +37,7 @@ export const Header = () => {
     }
 
     return (
-        <header className="fixed top-0 right-0 left-0 md:left-64 h-16 bg-white border-b border-slate-500/10 z-40">
+        <header className="fixed top-0 right-0 left-0 md:left-32 h-16 bg-white border-b border-slate-500/10 z-40">
             <div className="h-full flex items-center justify-between px-4">
                 {/* Left side - Brand/Title (hidden on desktop) */}
                 <div className="md:hidden">
