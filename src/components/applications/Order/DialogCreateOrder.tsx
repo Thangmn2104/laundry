@@ -5,7 +5,7 @@ import { Textarea } from "@/components/ui/textarea"
 import { useState, useEffect } from "react"
 import { useToast } from "@/hooks/use-toast"
 import { ProductService } from "@/services/product.service"
-import { Search } from "lucide-react"
+import { Search, X } from "lucide-react"
 
 interface DialogCreateOrderProps {
     open: boolean
@@ -17,7 +17,7 @@ interface Product {
     productId: string
     productName: string
     price: number
-    quantity: number
+    quantity: string
     selected?: boolean
 }
 
@@ -52,7 +52,7 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                     productId: row.productId,
                     productName: row.name,
                     price: row.price,
-                    quantity: 0
+                    quantity: ""
                 })
             })
             setProducts(products)
@@ -101,7 +101,15 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
 
         setLoading(true)
         try {
-            await onCreateOrder(formData)
+            const formattedFormData = {
+                ...formData,
+                orderItems: formData.orderItems.map((item: any) => ({
+                    ...item,
+                    quantity: Number(item.quantity)
+                }))
+            }
+
+            await onCreateOrder(formattedFormData)
             toast({
                 title: "Thành công",
                 description: "Đã tạo đơn hàng thành công",
@@ -119,46 +127,51 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
         }
     }
 
-    const handleIncreaseQuantity = (productId: string, step: number = 1) => {
+    const handleQuantityChange = (productId: string, value: string) => {
+        console.log(value)
+        if (!/^\d*\.?\d*$/.test(value) && value !== '') return
+
+        if ((value.match(/\./g) || []).length > 1) return
+
+        if (value.includes('.')) {
+            const decimals = value.split('.')[1]
+            if (decimals?.length > 3) return
+        }
+
+        const newQuantity = value === "." || value === "" ? "" : value
+
         setProducts(products.map(product =>
             product.productId === productId
-                ? { ...product, quantity: +(product.quantity + step).toFixed(1) }
+                ? {
+                    ...product,
+                    quantity: value === "" ? "" : newQuantity,
+                    selected: true
+                }
+                : product
+        ))
+
+        const product = products.find(p => p.productId === productId)
+        if (!product) return
+
+        setFormData(prev => ({
+            ...prev,
+            orderItems: [
+                ...prev.orderItems.filter(item => item.productId !== productId),
+                { ...product, quantity: newQuantity === "" ? "" : newQuantity }
+            ]
+        }))
+    }
+
+    const handleRemoveProduct = (productId: string) => {
+        setProducts(products.map(product =>
+            product.productId === productId
+                ? { ...product, selected: false, quantity: "" }
                 : product
         ))
 
         setFormData(prev => ({
             ...prev,
-            orderItems: prev.orderItems.map(item =>
-                item.productId === productId
-                    ? { ...item, quantity: +(item.quantity + step).toFixed(1) }
-                    : item
-            )
-        }))
-    }
-
-    const handleDecreaseQuantity = (productId: string, step: number = 1) => {
-        const updatedProducts = products.map(product => {
-            if (product.productId === productId && product.quantity >= step) {
-                const newQuantity = +(product.quantity - step).toFixed(1)
-                return {
-                    ...product,
-                    quantity: newQuantity,
-                    selected: newQuantity > 0
-                }
-            }
-            return product
-        })
-        setProducts(updatedProducts)
-
-        setFormData(prev => ({
-            ...prev,
-            orderItems: prev.orderItems.map(item => {
-                if (item.productId === productId) {
-                    const newQuantity = +(item.quantity - step).toFixed(1)
-                    return { ...item, quantity: newQuantity }
-                }
-                return item
-            }).filter(item => item.quantity > 0)
+            orderItems: prev.orderItems.filter(p => p.productId !== productId)
         }))
     }
 
@@ -174,7 +187,7 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                 ? {
                     ...product,
                     selected: newSelected,
-                    quantity: newSelected ? 1 : 0  // Set quantity to 1 when selected, 0 when deselected
+                    quantity: newSelected ? "1" : ""
                 }
                 : product
         ))
@@ -182,7 +195,7 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
         if (newSelected) {
             setFormData(prev => ({
                 ...prev,
-                orderItems: [...prev.orderItems, { ...product, quantity: 1 }]  // Add with quantity 1
+                orderItems: [...prev.orderItems, { ...product, quantity: "1" }]
             }))
         } else {
             setFormData(prev => ({
@@ -321,40 +334,24 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                                                 }).format(product.price)}
                                             </p>
                                         </div>
-                                        <div className="flex items-center gap-1">
-
+                                        <div className="flex items-center gap-2">
+                                            <Input
+                                                type="text"
+                                                value={product.quantity === "" ? "" : product.quantity}
+                                                onChange={(e) => handleQuantityChange(product.productId, e.target.value)}
+                                                className="w-24"
+                                                placeholder="0"
+                                            />
                                             <Button
-                                                variant="outline"
+                                                variant="ghost"
                                                 size="icon"
-                                                onClick={() => handleDecreaseQuantity(product.productId, 1)}
-                                                disabled={product.quantity === 0}
+                                                onClick={(e) => {
+                                                    e.stopPropagation();
+                                                    handleRemoveProduct(product.productId);
+                                                }}
+                                                className="h-8 w-8"
                                             >
-                                                - 1
-                                            </Button>
-                                            <div className="flex items-center gap-1">
-                                                <Button
-                                                    variant="outline"
-                                                    size="icon"
-                                                    onClick={() => handleDecreaseQuantity(product.productId, 0.1)}
-                                                    disabled={product.quantity < 0.1}
-                                                >
-                                                    <span className="text-xs">- 0.1</span>
-                                                </Button>
-                                                <span className="w-12 text-center">{product.quantity.toFixed(1)}</span>
-                                                <Button
-                                                    variant="outline"
-                                                    size="icon"
-                                                    onClick={() => handleIncreaseQuantity(product.productId, 0.1)}
-                                                >
-                                                    <span className="text-xs">+ 0.1</span>
-                                                </Button>
-                                            </div>
-                                            <Button
-                                                variant="outline"
-                                                size="icon"
-                                                onClick={() => handleIncreaseQuantity(product.productId, 1)}
-                                            >
-                                                + 1
+                                                <X className="h-4 w-4" />
                                             </Button>
                                         </div>
                                     </div>
@@ -371,7 +368,7 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                                             currency: 'VND'
                                         }).format(
                                             formData.orderItems.reduce((total, product) =>
-                                                total + (product.quantity * product.price), 0
+                                                total + (Number(product.quantity) * product.price), 0
                                             )
                                         )}
                                     </span>
