@@ -33,4 +33,16 @@ export class ProductService extends BaseService {
                 .catch((err: any) => reject(err));
         });
     }
+
+    updatePinned(productId: string, isPinned: boolean) {
+        const url = `/${this.name}/pin`;
+        return new Promise((resolve, reject) => {
+            ApiClient.post(url, { productId, isPinned })
+                .then((response: { data: {}; }) => {
+                    const res = response.data || {};
+                    resolve(res);
+                })
+                .catch((err: any) => reject(err));
+        });
+    }
 }

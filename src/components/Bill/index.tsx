@@ -45,7 +45,8 @@ const Bill = ({ order }: BillProps) => {
                     }
                     .customer-info {
                         margin-bottom: 8px;
-                        font-size: 13px;
+                        font-size: 18px;
+                        font-weight: bold;
                         text-align: left;
                         width: 100%;
                     }

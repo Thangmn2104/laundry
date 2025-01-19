@@ -19,6 +19,7 @@ interface Product {
     price: number
     quantity: string
     selected?: boolean
+    isPinned?: boolean
 }
 
 export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreateOrderProps) {
@@ -52,7 +53,8 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                     productId: row.productId,
                     productName: row.name,
                     price: row.price,
-                    quantity: ""
+                    quantity: "",
+                    isPinned: row.isPinned || false
                 })
             })
             setProducts(products)
@@ -150,15 +152,13 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                 : product
         ))
 
-        const product = products.find(p => p.productId === productId)
-        if (!product) return
-
         setFormData(prev => ({
             ...prev,
-            orderItems: [
-                ...prev.orderItems.filter(item => item.productId !== productId),
-                { ...product, quantity: newQuantity === "" ? "" : newQuantity }
-            ]
+            orderItems: prev.orderItems.map(item =>
+                item.productId === productId
+                    ? { ...item, quantity: newQuantity }
+                    : item
+            )
         }))
     }
 
@@ -205,10 +205,42 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
         }
     }
 
-    const filteredProducts = products.filter(product =>
-        product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
-        product.productId.toLowerCase().includes(searchTerm.toLowerCase())
-    )
+    const handleTogglePin = async (productId: string, currentPinStatus: boolean) => {
+        try {
+            await productService.updatePinned(productId, !currentPinStatus)
+            setProducts(products.map(product =>
+                product.productId === productId
+                    ? { ...product, isPinned: !currentPinStatus }
+                    : product
+            ))
+            toast({
+                title: "Thành công",
+                description: `Đã ${!currentPinStatus ? 'ghim' : 'bỏ ghim'} sản phẩm`,
+            })
+        } catch (error) {
+            console.error(error)
+            toast({
+                variant: "destructive",
+                title: "Lỗi",
+                description: "Không thể cập nhật trạng thái ghim",
+            })
+        }
+    }
+
+    const filteredProducts = products
+        .filter(product =>
+            product.productName.toLowerCase().includes(searchTerm.toLowerCase()) ||
+            product.productId.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+        .sort((a, b) => {
+            // Sort by isPinned first (pinned items go to top)
+            if (a.isPinned && !b.isPinned) return -1;
+            if (!a.isPinned && b.isPinned) return 1;
+            return 0;
+        });
+
+    const pinnedProducts = filteredProducts.filter(product => product.isPinned);
+    const unpinnedProducts = filteredProducts.filter(product => !product.isPinned);
 
     return (
         <Dialog open={open} onOpenChange={onClose}>
@@ -284,12 +316,9 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                             </div>
 
                             <div className="min-h-[400px] space-y-4 max-h-[600px] overflow-y-auto pr-4">
-                                {filteredProducts.length === 0 ? (
-                                    <div className="text-center text-gray-500 py-8">
-                                        Không tìm thấy sản phẩm nào
-                                    </div>
-                                ) : (
-                                    filteredProducts.map((product) => (
+                                {/* Pinned products - sticky section */}
+                                <div className="sticky top-0 z-10 space-y-4 bg-white pb-4">
+                                    {pinnedProducts.map((product) => (
                                         <div
                                             key={product.productId}
                                             className={`p-4 rounded-lg cursor-pointer transition-all
@@ -300,7 +329,68 @@ export function DialogCreateOrder({ open, onClose, onCreateOrder }: DialogCreate
                                             onClick={() => handleProductSelect(product.productId)}
                                         >
                                             <div className="flex-1">
-                                                <h4 className="font-medium">{product.productName}</h4>
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-medium">{product.productName}</h4>
+                                                        <span className="text-xs text-primary bg-primary/10 px-2 py-0.5 rounded">Ghim</span>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleTogglePin(product.productId, true);
+                                                        }}
+                                                        className="h-8"
+                                                    >
+                                                        Bỏ ghim
+                                                    </Button>
+                                                </div>
+                                                <p className="text-xs text-gray-500">ID: {product.productId}</p>
+                                                <p className="text-sm text-gray-500 mt-1">
+                                                    {new Intl.NumberFormat('vi-VN', {
+                                                        style: 'currency',
+                                                        currency: 'VND'
+                                                    }).format(product.price)}
+                                                </p>
+                                            </div>
+                                        </div>
+                                    ))}
+                                </div>
+
+                                {/* Unpinned products */}
+                                {unpinnedProducts.length === 0 && pinnedProducts.length === 0 ? (
+                                    <div className="text-center text-gray-500 py-8">
+                                        Không tìm thấy sản phẩm nào
+                                    </div>
+                                ) : (
+                                    unpinnedProducts.map((product) => (
+                                        <div
+                                            key={product.productId}
+                                            className={`p-4 rounded-lg cursor-pointer transition-all
+                                                ${product.selected
+                                                    ? 'border-2 border-primary bg-primary/5'
+                                                    : 'border hover:border-primary/50'
+                                                }`}
+                                            onClick={() => handleProductSelect(product.productId)}
+                                        >
+                                            <div className="flex-1">
+                                                <div className="flex items-center justify-between">
+                                                    <div className="flex items-center gap-2">
+                                                        <h4 className="font-medium">{product.productName}</h4>
+                                                    </div>
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={(e) => {
+                                                            e.stopPropagation();
+                                                            handleTogglePin(product.productId, false);
+                                                        }}
+                                                        className="h-8"
+                                                    >
+                                                        Ghim
+                                                    </Button>
+                                                </div>
                                                 <p className="text-xs text-gray-500">ID: {product.productId}</p>
                                                 <p className="text-sm text-gray-500 mt-1">
                                                     {new Intl.NumberFormat('vi-VN', {
