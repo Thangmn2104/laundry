@@ -24,7 +24,7 @@ import DialogViewListOrder from "@/components/applications/Order/DialogViewListO
 import { DialogCreateOrder } from "@/components/applications/Order/DialogCreateOrder"
 import DialogNoteOrderItem from "@/components/applications/Order/DialogNoteOrderItem"
 import { toast } from "@/hooks/use-toast"
-
+import { useAuth, User } from "@/store/useAuthStore"
 // Thiết lập locale mặc định
 moment.locale('vi');
 
@@ -82,7 +82,7 @@ const OrdersView = () => {
     const [selectedStatus, setSelectedStatus] = useState<string>("all")
     const [dateRange, setDateRange] = useState<DateRange | undefined>()
     const [openCreateDialog, setOpenCreateDialog] = useState(false)
-
+    const { user } = useAuth()
     const debouncedSearch = useCallback(
         debounce((searchValue: string) => {
             setQuery(prev => ({
@@ -368,7 +368,7 @@ const OrdersView = () => {
             cell: ({ row }) => {
                 const isCompleted = row.original.status === 'completed';
                 const isCancelled = row.original.status === 'cancelled';
-                const bill = Bill({ order: row.original });
+                const bill = Bill({ order: row.original, user: user as User });
 
                 return (
                     <div className="flex flex-col gap-1 w-full min-w-[100px]">

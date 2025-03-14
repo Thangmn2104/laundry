@@ -1,10 +1,26 @@
+import { User } from '@/store/useAuthStore';
 import 'moment/locale/vi';
+
 
 interface BillProps {
     order: any;
+    user: User;
 }
 
-const Bill = ({ order }: BillProps) => {
+const Bill = ({ order, user }: BillProps) => {
+    let location = '46A Nguyễn Hữu Tiến, Quận Tân Phú';
+    let chinhanh = '';
+    if (user.email === 'admin@gmail.com') {
+        location = '46A Nguyễn Hữu Tiến, Quận Tân Phú';
+        chinhanh = '';
+    }
+
+    if (user.email === 'admin1@gmail.com') {
+        location = `
+        84/86/16 Tân Sơn Nhì, P.Tân Sơn Nhì,
+         Quận Tân Phú`;
+        chinhanh = 'Chi nhánh 8';
+    }
     const printBill = () => {
         const billContent = `
             <!DOCTYPE html>
@@ -122,7 +138,8 @@ const Bill = ({ order }: BillProps) => {
             <body style="display: flex; flex-direction: column; align-items: center; padding: 8px;">
                 <div class="header">
                     <div class="store-name">IMC LAUNDRY</div>
-                    <div class="store-info">Đ/C: 46A Nguyễn Hữu Tiến, Quận Tân Phú</div>
+                    ${chinhanh ? `<div class="store-info">${chinhanh}</div>` : ''}
+                    <div class="store-info">Đ/C: ${location}</div>
                     <div class="store-info">SĐT: 0943.776.988</div>
                 </div>
                 
