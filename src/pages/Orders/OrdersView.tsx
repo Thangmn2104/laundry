@@ -373,7 +373,7 @@ const OrdersView = () => {
                 return (
                     <div className="flex flex-col gap-1 w-full min-w-[100px]">
                         <Button
-                            disabled={!isCompleted}
+                            // disabled={!isCompleted}
                             variant="default"
                             size="sm"
                             className="w-full bg-blue-500 hover:bg-blue-600 disabled:bg-gray-400 disabled:text-gray-700"
