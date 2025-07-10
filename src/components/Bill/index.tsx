@@ -1,28 +1,27 @@
-import { User } from '@/store/useAuthStore';
-import 'moment/locale/vi';
-
+import { User } from "@/store/useAuthStore";
+import "moment/locale/vi";
 
 interface BillProps {
-    order: any;
-    user: User;
+  order: any;
+  user: User;
 }
 
 const Bill = ({ order, user }: BillProps) => {
-    let location = '46A Nguyễn Hữu Tiến, Quận Tân Phú';
-    let chinhanh = '';
-    if (user.email === 'admin@gmail.com') {
-        location = '46A Nguyễn Hữu Tiến, Quận Tân Phú';
-        chinhanh = '';
-    }
+  let location = "46A Nguyễn Hữu Tiến, Quận Tân Phú";
+  let chinhanh = "";
+  if (user.email === "admin1@gmail.com") {
+    location = "46A Nguyễn Hữu Tiến, Quận Tân Phú";
+    chinhanh = "";
+  }
 
-    if (user.email === 'admin1@gmail.com') {
-        location = `
+  if (user.email === "admin@gmail.com") {
+    location = `
         84/86/16 Tân Sơn Nhì, P.Tân Sơn Nhì,
          Quận Tân Phú`;
-        chinhanh = 'Chi nhánh 8';
-    }
-    const printBill = () => {
-        const billContent = `
+    chinhanh = "Chi nhánh 8";
+  }
+  const printBill = () => {
+    const billContent = `
             <!DOCTYPE html>
             <html lang="vi">
             <head>
@@ -138,7 +137,11 @@ const Bill = ({ order, user }: BillProps) => {
             <body style="display: flex; flex-direction: column; align-items: center; padding: 8px;">
                 <div class="header">
                     <div class="store-name">IMC LAUNDRY</div>
-                    ${chinhanh ? `<div class="store-info">${chinhanh}</div>` : ''}
+                    ${
+                      chinhanh
+                        ? `<div class="store-info">${chinhanh}</div>`
+                        : ""
+                    }
                     <div class="store-info">Đ/C: ${location}</div>
                     <div class="store-info">SĐT: 0943.776.988</div>
                 </div>
@@ -146,12 +149,14 @@ const Bill = ({ order, user }: BillProps) => {
                 <div class="bill-title">
                     <strong>HÓA ĐƠN ĐẶT HÀNG</strong>
                     <br>
-                    ${new Date().toLocaleString('vi-VN', { timeZone: 'Asia/Ho_Chi_Minh' })}<br>
+                    ${new Date().toLocaleString("vi-VN", {
+                      timeZone: "Asia/Ho_Chi_Minh",
+                    })}<br>
                 </div>
 
                 <div class="customer-info">
-                    Khách hàng: ${order?.customerName || 'Khách lẻ'}<br>
-                    SĐT: ${order?.phone || '---'}<br>
+                    Khách hàng: ${order?.customerName || "Khách lẻ"}<br>
+                    SĐT: ${order?.phone || "---"}<br>
                 </div>
 
                 <table class="items-table">
@@ -164,24 +169,36 @@ const Bill = ({ order, user }: BillProps) => {
                             </div>
                         </td>
                     </tr>
-                    ${order?.orderItems?.map((item: any) => `
+                    ${order?.orderItems
+                      ?.map(
+                        (item: any) => `
                         <tr style="border-bottom: 1px dashed #000;">
                             <td>
-                                <div class="product-name">${item?.productName}</div>
+                                <div class="product-name">${
+                                  item?.productName
+                                }</div>
                                 <div class="price-row">
-                                    <span>${item?.price?.toLocaleString('vi-VN')}</span>
+                                    <span>${item?.price?.toLocaleString(
+                                      "vi-VN"
+                                    )}</span>
                                     <span>${item?.quantity}</span>
-                                    <span>${(item?.quantity * item?.price).toLocaleString('vi-VN')}</span>
+                                    <span>${(
+                                      item?.quantity * item?.price
+                                    ).toLocaleString("vi-VN")}</span>
                                 </div>
                             </td>
                         </tr>
-                    `).join('')}
+                    `
+                      )
+                      .join("")}
                 </table>
 
                 <div class="total-section">
                     <div class="total-row">
                         <span>Tổng thanh toán:</span>
-                        <span>${order?.total?.toLocaleString('vi-VN') || '0'}</span>
+                        <span>${
+                          order?.total?.toLocaleString("vi-VN") || "0"
+                        }</span>
                     </div>
                 </div>
 
@@ -193,27 +210,27 @@ const Bill = ({ order, user }: BillProps) => {
             </html>
         `;
 
-        // Tạo một iframe ẩn
-        const iframe = document.createElement('iframe');
-        iframe.style.display = 'none';
-        document.body.appendChild(iframe);
+    // Tạo một iframe ẩn
+    const iframe = document.createElement("iframe");
+    iframe.style.display = "none";
+    document.body.appendChild(iframe);
 
-        // Ghi nội dung vào iframe
-        const iframeWindow = iframe.contentWindow;
-        if (iframeWindow) {
-            iframeWindow.document.write(billContent);
-            iframeWindow.document.close();
+    // Ghi nội dung vào iframe
+    const iframeWindow = iframe.contentWindow;
+    if (iframeWindow) {
+      iframeWindow.document.write(billContent);
+      iframeWindow.document.close();
 
-            // In và xóa iframe
-            iframeWindow.focus();
-            setTimeout(() => {
-                iframeWindow.print();
-                document.body.removeChild(iframe);
-            }, 500);
-        }
-    };
+      // In và xóa iframe
+      iframeWindow.focus();
+      setTimeout(() => {
+        iframeWindow.print();
+        document.body.removeChild(iframe);
+      }, 500);
+    }
+  };
 
-    return { printBill };
+  return { printBill };
 };
 
 export default Bill;
