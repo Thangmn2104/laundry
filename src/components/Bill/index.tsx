@@ -7,11 +7,15 @@ interface BillProps {
 }
 
 const Bill = ({ order, user }: BillProps) => {
+  let name = "IMC LAUNDRY";
+  let sdt = "0943.776.988";
   let location = "46A Nguyễn Hữu Tiến, Quận Tân Phú";
   let chinhanh = "";
   if (user.email === "admin1@gmail.com") {
-    location = "46A Nguyễn Hữu Tiến, Quận Tân Phú";
+    location = "111/3 Phạm Văn Chiêu, P. An Hội Tây";
     chinhanh = "";
+    name = "GIẶT SẤY THẢO MY";
+    sdt = "0939.780.175";
   }
 
   if (user.email === "admin@gmail.com") {
@@ -19,6 +23,7 @@ const Bill = ({ order, user }: BillProps) => {
         84/86/16 Tân Sơn Nhì, P.Tân Sơn Nhì,
          Quận Tân Phú`;
     chinhanh = "Chi nhánh 8";
+    name = "IMC LAUNDRY";
   }
   const printBill = () => {
     const billContent = `
@@ -136,14 +141,14 @@ const Bill = ({ order, user }: BillProps) => {
             </head>
             <body style="display: flex; flex-direction: column; align-items: center; padding: 8px;">
                 <div class="header">
-                    <div class="store-name">IMC LAUNDRY</div>
+                    <div class="store-name">${name}</div>
                     ${
                       chinhanh
                         ? `<div class="store-info">${chinhanh}</div>`
                         : ""
                     }
                     <div class="store-info">Đ/C: ${location}</div>
-                    <div class="store-info">SĐT: 0943.776.988</div>
+                    <div class="store-info">SĐT: ${sdt}</div>
                 </div>
                 
                 <div class="bill-title">
